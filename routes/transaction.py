@@ -8,7 +8,7 @@ def list_create():
   if request.method == 'GET':
     transactions = Transaction.prisma().find_many(where={'transactionId':True})
     return {
-      "data": [Transaction.dict() for transaction in transactions]
+      "data": [transaction.dict() for transaction in transactions]
     }
 
   if request.method == 'POST':

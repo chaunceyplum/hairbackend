@@ -6,9 +6,10 @@ barber_blueprint = Blueprint('barber', __name__)
 @barber_blueprint.route('/', methods=['GET','POST'])
 def list_create():
   if request.method == 'GET':
-    barbers = Barber.prisma().find_many(where={'barberId':True})
+    barbers = Barber.prisma().find_many()
     return {
-      "data": [Barber.dict() for barber in barbers]
+      "data": [barber.dict() for barber in barbers]
+      
     }
 
   if request.method == 'POST':
@@ -28,3 +29,4 @@ def list_create():
     barber = Barber.prisma().create(data={'barberId': barberId, 'firstName': firstName})
 
     return dict(barber)
+    # return barber
