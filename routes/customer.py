@@ -6,9 +6,7 @@ customer_blueprint = Blueprint('customer', __name__)
 @customer_blueprint.route('/', methods=['GET','POST'])
 def list_create():
   if request.method == 'GET':
-    customers = Customer.prisma().find_many(
-      # where={'customerId':True}
-      )
+    customers = Customer.prisma().find_many()
     return {
       "data": [customer.dict() for customer in customers]
     }
@@ -28,7 +26,7 @@ def list_create():
     
     
 
-    if phoneNumber is None or customerId is None:
+    if phoneNumber is None or customerId is None or firstName is None:
       return {"error": "You need to fill in all fields accurately"}
 
     customer = Customer.prisma().create(data={'customerId': customerId, 'firstName': firstName, 'lastName': lastName, 'city': city, 'phoneNumber': phoneNumber, 'ffavoriteBarber':ffavoriteBarber})

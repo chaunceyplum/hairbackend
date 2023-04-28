@@ -6,7 +6,7 @@ appointment_blueprint = Blueprint('appointment', __name__)
 @appointment_blueprint.route('/', methods=['GET','POST'])
 def list_create():
   if request.method == 'GET':
-    appointments = Appointment.prisma().find_many(where={'appointmentId':True})
+    appointments = Appointment.prisma().find_many()
     return {
       "data": [appointment.dict() for appointment in appointments]
     }

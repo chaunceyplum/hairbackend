@@ -6,7 +6,7 @@ transaction_blueprint = Blueprint('transaction', __name__)
 @transaction_blueprint.route('/', methods=['GET','POST'])
 def list_create():
   if request.method == 'GET':
-    transactions = Transaction.prisma().find_many(where={'transactionId':True})
+    transactions = Transaction.prisma().find_many()
     return {
       "data": [transaction.dict() for transaction in transactions]
     }
