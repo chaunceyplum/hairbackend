@@ -4,6 +4,7 @@ from routes.customer import customer_blueprint
 from routes.barber import barber_blueprint
 from routes.appointment import appointment_blueprint
 from routes.transaction import transaction_blueprint
+import asyncio
 
 # from routes.post import post_blueprint
 

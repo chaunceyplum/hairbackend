@@ -1,10 +1,11 @@
 from flask import Blueprint, request
 from prisma.models import Barber
+import asyncio
 
 barber_blueprint = Blueprint('barber', __name__)
 
-@barber_blueprint.route('/', methods=['GET','POST'])
-def list_create():
+@barber_blueprint.route('/', methods=['GET','POST', 'DELETE'])
+async def list_create():
   if request.method == 'GET':
     barbers = Barber.prisma().find_many()
     return {
@@ -30,3 +31,7 @@ def list_create():
 
     return dict(barber)
     # return barber
+
+  if request.method == 'Delete':
+    barber = await Barber.prisma().delete_many()
+    
