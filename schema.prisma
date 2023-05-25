@@ -1,56 +1,42 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
+generator db {
+  provider             = "prisma-client-py"
+  recursive_type_depth = "-1"
+  interface            = "sync"
+}
 
 datasource db {
   provider = "postgresql"
   url      = "postgres://gtfixtxgrbgrze:04ca58c50b220c61df03a4f4e9bcde65e3e31e596f7fcc91aa606429e3857c4a@ec2-52-54-212-232.compute-1.amazonaws.com:5432/d8pqm4p4gon5th"
 }
-generator db {
-  provider             = "prisma-client-py"
-  interface            = "sync"
-}
+
 model Transaction {
-  transactionId String     @id @default(uuid())
-  fbarberId     Int
-  //barber        Barber   @relation(fields: [fbarberId], references: [barberId])
-  //customer      Customer @relation(fields: [fcustomerId], references: [customerId])
+  transactionId String   @id @unique @default(uuid())
   fcustomerId   String
-  dateOfOrder   DateTime
-  orderPrice    Float
-  @@unique([transactionId])
+  orderPrice    Int
+  fbarberId     Int
+  //dateOfOrder   DateTime @default(now())
 }
 
 model Barber {
-  barberId  Int    @id @default(autoincrement())
+  barberId  Int    @id @unique @default(autoincrement())
   firstName String
-  //Transaction Transaction[]
-  //Customer    Customer[]
-  //Appointment Appointment[]
-  @@unique([barberId])
 }
 
 model Customer {
-  customerId      String           @id @default(uuid())
+  customerId      String @id @default(uuid())
   firstName       String
   lastName        String
   city            String
   phoneNumber     String
-  ffavoriteBarber Int
-  //barber          Barber        @relation(fields: [ffavoriteBarber], references: [barberId])
-  //Transaction     Transaction[]
-  //Appointment     Appointment[]
-  @@unique([customerId,phoneNumber])
+  ffavoriteBarber Int    @default(1)
+
+  @@unique([customerId, phoneNumber])
 }
 
 model Appointment {
-  appointmentDate          DateTime
-  Date          DateTime
-  //customer      Customer @relation(fields: [fcustomerId], references: [customerId])
-  fcustomerId   String
-  //barber        Barber   @relation(fields: [fbarberId], references: [barberId])
-  fbarberId     Int
-  appointmentId String      @id @default(uuid())
-  @@unique([appointmentId])
+  appointmentId   String   @id @unique @default(uuid())
+  fcustomerId     String
+  Date            DateTime @default(now())
+  appointmentDate DateTime
+  fbarberId       Int
 }
-

@@ -22,7 +22,7 @@ def list_create():
     lastName = data.get('lastName')
     city = data.get('city')
     phoneNumber = data.get('phoneNumber')
-    ffavoriteBarber = data.get('favoriteBarber')
+    ffavoriteBarber = data.get('ffavoriteBarber')
     
     
 

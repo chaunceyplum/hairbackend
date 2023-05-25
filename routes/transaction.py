@@ -1,10 +1,16 @@
 from flask import Blueprint, request
 from prisma.models import Transaction
+from datetime import datetime
 
 transaction_blueprint = Blueprint('transaction', __name__)
 
 @transaction_blueprint.route('/', methods=['GET','POST'])
 def list_create():
+  today = datetime.today()
+  # now_string = str(now.isoformat())
+  
+  # str(now.isoformat())
+
   if request.method == 'GET':
     transactions = Transaction.prisma().find_many()
     return {
@@ -18,16 +24,27 @@ def list_create():
       return
     
     transactionId = data.get('transactionId')
-    fbarberId = data.get('firstName')
-    fcustomerId = data.get('lastName')
-    dateOfOrder = data.get('city')
-    orderPrice = data.get('phoneNumber')
+    fbarberId = data.get('fbarberId')
+    fcustomerId = data.get('fcustomerId')
+    # dateOfOrder = today
+    orderPrice = data.get('orderPrice')
     
+
+    if fbarberId is None or fcustomerId  is None or orderPrice is None:
+      return  "You need to fill in all fields accurately", 500
+
+    transaction = Transaction.prisma().create(data={'transactionId':transactionId,'fbarberId': fbarberId, 'fcustomerId': fcustomerId,  'orderPrice': orderPrice})
+
+    return dict(transaction),200
+  
+
+
+
+  #model data
+  # {
     
-
-    if transactionId is None  or fbarberId is None or fcustomerId  is None or dateOfOrder is None or orderPrice is None:
-      return {"error": "You need to fill in all fields accurately"}
-
-    transaction = Transaction.prisma().create(data={'transactionId': transactionId, 'fbarberId': fbarberId, 'fcustomerId': fcustomerId, 'dateOfOrder': dateOfOrder, 'orderPrice': orderPrice})
-
-    return dict(transaction)
+  #   "fbarberId":1,
+  #   "fcustomerId":"1",
+  #   "orderPrice":"30"
+    
+  # }
