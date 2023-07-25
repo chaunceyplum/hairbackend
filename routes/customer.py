@@ -10,6 +10,7 @@ def list_create():
     return {
       "data": [customer.dict() for customer in customers]
     }
+    
 
   if request.method == 'POST':
     data = request.json
@@ -23,7 +24,7 @@ def list_create():
     city = data.get('city')
     phoneNumber = data.get('phoneNumber')
     ffavoriteBarber = data.get('ffavoriteBarber')
-    
+      
     
 
     if phoneNumber is None or customerId is None or firstName is None:
@@ -32,6 +33,7 @@ def list_create():
     customer = Customer.prisma().create(data={'customerId': customerId, 'firstName': firstName, 'lastName': lastName, 'city': city, 'phoneNumber': phoneNumber, 'ffavoriteBarber':ffavoriteBarber})
 
     return dict(customer)
+    return
   
 # {
 #     "customerId":"1",

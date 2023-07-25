@@ -15,7 +15,7 @@ def list_create():
     data = request.json
 
     if data is None:
-      return
+     return {"error": "You need to fill in all fields accurately"}
     
     appointmentId = data.get('appointmentId')
     appointmentDate = data.get('appointmentDate')
@@ -28,6 +28,7 @@ def list_create():
     if appointmentId is None  or fbarberId is None or fcustomerId  is None or Date is None or appointmentDate is None:
       return {"error": "You need to fill in all fields accurately"}
 
-    appointment = Appointment.prisma().create(data={'appointmentId': appointmentId, 'fbarberId': fbarberId, 'fcustomerId': fcustomerId, 'date': Date, 'appointmentDate': appointmentDate})
+    
 
-    return dict(appointment)
+    #return dict(appointment)
+    return

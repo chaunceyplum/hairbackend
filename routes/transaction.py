@@ -16,7 +16,7 @@ def list_create():
     return {
       "data": [transaction.dict() for transaction in transactions]
     }
-
+    
   if request.method == 'POST':
     data = request.json
 
@@ -35,8 +35,8 @@ def list_create():
 
     transaction = Transaction.prisma().create(data={'transactionId':transactionId,'fbarberId': fbarberId, 'fcustomerId': fcustomerId,  'orderPrice': orderPrice})
 
-    return dict(transaction),200
-  
+  return dict(transaction),200
+    
 
 
 
