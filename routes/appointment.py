@@ -1,12 +1,15 @@
 from flask import Blueprint, request
 from prisma.models import Appointment
-
+import asyncio
+from prisma import Client, register
 appointment_blueprint = Blueprint('appointment', __name__)
 
 @appointment_blueprint.route('/', methods=['GET','POST'])
-def list_create():
+async def list_create():
+  
+
   if request.method == 'GET':
-    appointments = Appointment.prisma().find_many()
+    appointments =  Appointment.prisma().find_many()
     return {
       "data": [appointment.dict() for appointment in appointments]
     }
@@ -30,5 +33,5 @@ def list_create():
 
     
 
-    #return dict(appointment)
+    # return dict(appointment)
     return

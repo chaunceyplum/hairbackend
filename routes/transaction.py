@@ -1,16 +1,14 @@
 from flask import Blueprint, request
 from prisma.models import Transaction
 from datetime import datetime
-
+import asyncio
+from prisma import Client, register
 transaction_blueprint = Blueprint('transaction', __name__)
 
 @transaction_blueprint.route('/', methods=['GET','POST'])
-def list_create():
-  today = datetime.today()
-  # now_string = str(now.isoformat())
+async def list_create():
   
-  # str(now.isoformat())
-
+  
   if request.method == 'GET':
     transactions = Transaction.prisma().find_many()
     return {

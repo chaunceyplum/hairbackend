@@ -1,13 +1,16 @@
 from flask import Blueprint, request
 from prisma.models import Barber
-# import asyncio
+import asyncio
 from sqlalchemy import select
+from prisma import Client, register
+
 barber_blueprint = Blueprint('barber', __name__)
 
 @barber_blueprint.route('/', methods=['GET','POST', 'DELETE'])
 async def list_create ():
+  
   if request.method == 'GET':
-    barbers = await Barber.prisma().find_many()
+    barbers =  Barber.prisma().find_many()
     # result = session.execute(select(User).order_by(User.id))
     print(barbers)
     return {

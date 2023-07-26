@@ -1,12 +1,14 @@
 from flask import Blueprint, request
 from prisma.models import Customer
-
+import asyncio
+from prisma import Client, register
 customer_blueprint = Blueprint('customer', __name__)
 
 @customer_blueprint.route('/', methods=['GET','POST'])
-def list_create():
+async def list_create():
+  
   if request.method == 'GET':
-    customers = Customer.prisma().find_many()
+    customers =  Customer.prisma().find_many()
     return {
       "data": [customer.dict() for customer in customers]
     }
@@ -33,7 +35,7 @@ def list_create():
     customer = Customer.prisma().create(data={'customerId': customerId, 'firstName': firstName, 'lastName': lastName, 'city': city, 'phoneNumber': phoneNumber, 'ffavoriteBarber':ffavoriteBarber})
 
     return dict(customer)
-    return
+    
   
 # {
 #     "customerId":"1",
