@@ -22,7 +22,7 @@ async def list_create ():
     data = request.json
 
     data1 = data['data'] 
-
+ # jnm,
     
     email = data1['email']
     # email1 = data1.data 
@@ -45,4 +45,7 @@ async def list_create ():
     return 500
   # if request.method == 'Delete':
   #   return
+
+
+
     
