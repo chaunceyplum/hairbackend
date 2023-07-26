@@ -9,7 +9,7 @@ login_blueprint = Blueprint('login', __name__)
 
 @login_blueprint.route('/', methods=['POST'])
 async def list_create ():
-  
+  # s
   # if request.method == 'GET':
   #   # logins =  login.prisma().find_many()
   #   # # result = session.execute(select(User).order_by(User.id))
