@@ -32,11 +32,13 @@ app.register_blueprint(appointment_blueprint, url_prefix='/appointment')
 app.register_blueprint(transaction_blueprint, url_prefix='/transaction')
 app.register_blueprint(login_blueprint, url_prefix='/login')
 
+@app.cli.command("prisma generate")
 @app.route('/')
 def index():
     return {'status':'up'}
 
 def main() -> None:
+  
   db = Prisma()
   db.connect()
 
