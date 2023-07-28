@@ -1,1 +1,1 @@
-web: `prisma generate`
+web: `prisma generate && gunicorn app:app``
