@@ -7,7 +7,7 @@ from prisma import Client, register
 barber_blueprint = Blueprint('barber', __name__)
 
 @barber_blueprint.route('/', methods=['GET','POST', 'DELETE'])
-async def list_create ():
+def list_create ():
   
   if request.method == 'GET':
     barbers =  Barber.prisma().find_many()

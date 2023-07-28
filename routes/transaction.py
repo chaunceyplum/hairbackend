@@ -6,7 +6,7 @@ from prisma import Client, register
 transaction_blueprint = Blueprint('transaction', __name__)
 
 @transaction_blueprint.route('/', methods=['GET','POST'])
-async def list_create():
+def list_create():
   
   
   if request.method == 'GET':

@@ -5,7 +5,7 @@ from prisma import Client, register
 appointment_blueprint = Blueprint('appointment', __name__)
 
 @appointment_blueprint.route('/', methods=['GET','POST'])
-async def list_create():
+def list_create():
   
 
   if request.method == 'GET':
