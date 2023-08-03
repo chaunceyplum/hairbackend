@@ -1,8 +1,8 @@
 from flask import Blueprint, request
-from prisma.models import Barber
+# from prisma.models import Barber
 import asyncio
 from sqlalchemy import select
-from prisma import Client, register
+# from prisma import Client, register
 
 barber_blueprint = Blueprint('barber', __name__)
 
