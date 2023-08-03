@@ -1,40 +1,42 @@
 from flask import Blueprint, request
-from prisma.models import Customer
+# from prisma.models import Customer
 import asyncio
-from prisma import Client, register
+# from prisma import Client, register
 customer_blueprint = Blueprint('customer', __name__)
 
 @customer_blueprint.route('/', methods=['GET','POST'])
 def list_create():
   
   if request.method == 'GET':
-    customers =  Customer.prisma().find_many()
-    return {
-      "data": [customer.dict() for customer in customers]
-    }
+  #   customers =  Customer.prisma().find_many()
+  #   return {
+  #     "data": [customer.dict() for customer in customers]
+  #   }
+    return 'successfull https call'
     
 
   if request.method == 'POST':
-    data = request.json
+    # data = request.json
 
-    if data is None:
-      return
+    # if data is None:
+    #   return
     
-    customerId = data.get('customerId')
-    firstName = data.get('firstName')
-    lastName = data.get('lastName')
-    city = data.get('city')
-    phoneNumber = data.get('phoneNumber')
-    ffavoriteBarber = data.get('ffavoriteBarber')
+    # customerId = data.get('customerId')
+    # firstName = data.get('firstName')
+    # lastName = data.get('lastName')
+    # city = data.get('city')
+    # phoneNumber = data.get('phoneNumber')
+    # ffavoriteBarber = data.get('ffavoriteBarber')
       
     
 
-    if phoneNumber is None or customerId is None or firstName is None:
-      return {"error": "You need to fill in all fields accurately"}
+    # if phoneNumber is None or customerId is None or firstName is None:
+    #   return {"error": "You need to fill in all fields accurately"}
 
-    customer = Customer.prisma().create(data={'customerId': customerId, 'firstName': firstName, 'lastName': lastName, 'city': city, 'phoneNumber': phoneNumber, 'ffavoriteBarber':ffavoriteBarber})
+    # customer = Customer.prisma().create(data={'customerId': customerId, 'firstName': firstName, 'lastName': lastName, 'city': city, 'phoneNumber': phoneNumber, 'ffavoriteBarber':ffavoriteBarber})
 
-    return dict(customer)
+    # return dict(customer)
+    return 'successfull https call'
     
   
 # {

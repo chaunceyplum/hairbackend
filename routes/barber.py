@@ -10,34 +10,36 @@ barber_blueprint = Blueprint('barber', __name__)
 def list_create ():
   
   if request.method == 'GET':
-    barbers =  Barber.prisma().find_many()
-    # result = session.execute(select(User).order_by(User.id))
-    print(barbers)
-    return {
-      "data":  [barber.dict() for barber in barbers]
-    }
+    # barbers =  Barber.prisma().find_many()
+    # # result = session.execute(select(User).order_by(User.id))
+    # print(barbers)
+    # return {
+    #   "data":  [barber.dict() for barber in barbers]
+    # }
+    return 'successfull https call'
   if request.method == 'POST':
-    data = request.json
+    # data = request.json
 
-    if data is None:
-      return {"error": "You need to fill in all fields accurately"}
-
-    
-    barberId = data.get('barberId')
-    firstName = data.get('firstName')
-    
-    
-
-    if firstName is None:
-      return {"error": "You need to fill in all fields accurately"}
+    # if data is None:
+    #   return {"error": "You need to fill in all fields accurately"}
 
     
+    # barberId = data.get('barberId')
+    # firstName = data.get('firstName')
+    
+    
 
-    barber = Barber.prisma().create(data={'firstName':firstName})
+    # if firstName is None:
+    #   return {"error": "You need to fill in all fields accurately"}
 
-    return dict(barber),200
-    # return barber dictionary
+    
+
+    # barber = Barber.prisma().create(data={'firstName':firstName})
+
+    # return dict(barber),200
+    # # return barber dictionary
+    return 'successfull https call'
 
   if request.method == 'Delete':
-    return
+    return 'successfull https call'
     
