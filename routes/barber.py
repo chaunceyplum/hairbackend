@@ -15,9 +15,11 @@ import datetime
 from sqlalchemy import Integer, String, DateTime, Boolean
 from sqlalchemy import select
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import Session
+# from app import session
+# from sqlalchemy.orm import Session
 # from app import db
-
+# from app import db
+from sqlalchemy import text
 
 barber_blueprint = Blueprint('barber', __name__)
 
@@ -54,10 +56,16 @@ def list_create ():
 
 
 
-    barbers = select(Barber).where(Barber.firstName == 'Robert')
-    result = db.session.execute(barbers)
+    # barbers = select(Barber).where(Barber.firstName == 'Robert')
+    # result = session.execute(barbers)
+    
+
+    sql = text('SELECT * FROM public."Barber"')
+    result = db.engine.execute(sql)
+    names = [row[0] for row in result]
+    
     # return dict(barbers)
-    return str(result)
+    return str(names)
   if request.method == 'POST':
     # data = request.json
 

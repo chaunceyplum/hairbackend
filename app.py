@@ -1,6 +1,9 @@
 from flask import Flask, jsonify
 # from prisma import Prisma, register
 from flask import Flask, render_template, request, url_for, redirect
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import text
+
 from routes.customer import customer_blueprint
 from routes.barber import barber_blueprint
 from routes.appointment import appointment_blueprint
@@ -15,103 +18,92 @@ from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
+from sqlalchemy.orm import sessionmaker
+
 import datetime
 from sqlalchemy import Integer, String, DateTime, Boolean
 from sqlalchemy import select
-from flask_sqlalchemy import SQLAlchemy
-# from flask_cors import CORS
+# from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import create_engine
 
+# from flask_cors import CORS
+db = SQLAlchemy()
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://gtfixtxgrbgrze:04ca58c50b220c61df03a4f4e9bcde65e3e31e596f7fcc91aa606429e3857c4a@ec2-52-54-212-232.compute-1.amazonaws.com:5432/d8pqm4p4gon5th'
-db = SQLAlchemy(app)
 
 
-class Base(DeclarativeBase):
-     pass
-class Appointment(Base):
-   __tablename__ = "Appointment"
-   __table_args__ = {'extend_existing': True}
-   appointmentId: Mapped[int] = mapped_column(primary_key=True)
-   fcustomerId: Mapped[int] 
-   fbarberId: Mapped[int] 
-   date: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True))
-   appointmentDate: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True))
-   phoneNumber: Mapped[int] = mapped_column(unique=True)
-   
-   def __repr__(self) -> str:
-       return f"Appointment(appointmentId={self.appointmentId!r}, fcustomerId={self.fcustomerId!r},fbarberId={self.fbarbererId!r},date={self.date!r},appointmentDate={self.appointmentDate!r},phoneNumber={self.phoneNumber!r})"
-   
-class Barber(Base):
-   __tablename__ = "Barber"
-   __table_args__ = {'extend_existing': True}
-   barberId: Mapped[int] = mapped_column(primary_key=True)
-   firstName: Mapped[str] = mapped_column(String(30))
-   
- 
-   def __repr__(self) -> str:
-       return f"Barber(barberId={self.barberId!r}, firstName={self.firstName!r})"
-   
-class Customer(Base):
-   __tablename__ = "Customer"
-   __table_args__ = {'extend_existing': True}
-   customerId: Mapped[int] = mapped_column(primary_key=True)
-   firstName: Mapped[str] = mapped_column(String(30))
-   lastName: Mapped[str] = mapped_column(String(30))
-   city: Mapped[str] = mapped_column(String(30))
-   phoneNumber: Mapped[str] = mapped_column(String(30))
-   ffavoriteBarber: Mapped[str] = mapped_column(String(30))
-   email: Mapped[str] = mapped_column(String(30))
-   password: Mapped[str] = mapped_column(String(30))
-   isLoggedIn: Mapped[bool]  
-   # addresses: Mapped[List["Address"]] = relationship(
-   #     back_populates="user", cascade="all, delete-orphan"
-   # )
-   def __repr__(self) -> str:
-       return f"Customer(customerId={self.customerId!r}, firstName={self.firstName!r},lastName={self.lastName!r},city={self.city!r},phoneNumber={self.phoneNumber!r},ffavoriteBarber={self.ffavoriteBarber!r},email={self.email!r},password={self.password!r}, isLoggedIn={self.isLoggedIn!r})"
-   
-class Transaction(Base):
-   __tablename__ = "Transaction"
-   __table_args__ = {'extend_existing': True}
-   transactionId: Mapped[int] = mapped_column(primary_key=True)
-   fcustomerId: Mapped[int] = mapped_column(unique=True)
-   orderPrice: Mapped[int] = mapped_column(unique=True)
-   fbarberId: Mapped[int] = mapped_column(unique=True)
-   Date: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True))
-   # addresses: Mapped[List["Address"]] = relationship(
-   #     back_populates="user", cascade="all, delete-orphan"
-   # )
-   def __repr__(self) -> str:
-       return f"Transaction(id={self.id!r}, name={self.name!r}, fullname={self.fullname!r})"
 
-class Contact(Base):
-   __tablename__ = "Appointment"
-   __table_args__ = {'extend_existing': True}
-   ContactId: Mapped[int] = mapped_column(primary_key=True)
-   Name: Mapped[str] = mapped_column(String(30))
-   Email: Mapped[str] = mapped_column(String(30), unique=True)
-   Message: Mapped[str] = mapped_column(String(30))
-   
-   
-   def __repr__(self) -> str:
-       return f"Contact(contactId={self.appointmentId!r}, Name={self.Name!r},Email={self.Email!r},Message={self.Message!r}"
-   
-app.register_blueprint(customer_blueprint, url_prefix='/customer')
+
+db.init_app(app)
+
+
+
+# engine = create_engine('postgresql://gtfixtxgrbgrze:04ca58c50b220c61df03a4f4e9bcde65e3e31e596f7fcc91aa606429e3857c4a@ec2-52-54-212-232.compute-1.amazonaws.com:5432/d8pqm4p4gon5th')
+# # Base.metadata.create_all(bind=engine)
+# Session = sessionmaker(bind=engine)
+# session = Session()
+class Barber(db.Model):
+    __tablename__ = "Barber"
+    __table_args__ = {'extend_existing': True}
+    barberId = db.Column(db.Integer, primary_key=True)
+    firstName = db.Column(db.String, unique=True, nullable=False)
+def main() -> None:
+  with app.app_context():
+    db.create_all()
+
+# class Transaction:
+#     __table__ = db.metadatas["auth"].tables["Transaction"]
+# class Barber:
+#     __table__ = db.metadatas["auth"].tables["Barber"]
+# class Customer:
+#     __table__ = db.metadatas["auth"].tables["Customer"]
+# class Appointment:
+#     __table__ = db.metadatas["auth"].tables["Appointment"]
+
+  
+# app.register_blueprint(customer_blueprint, url_prefix='/customer')
 # app.register_blueprint(barber_blueprint, url_prefix='/barber')
-app.register_blueprint(appointment_blueprint, url_prefix='/appointment')
-app.register_blueprint(transaction_blueprint, url_prefix='/transaction')
-app.register_blueprint(login_blueprint, url_prefix='/login')
+# app.register_blueprint(appointment_blueprint, url_prefix='/appointment')
+# app.register_blueprint(transaction_blueprint, url_prefix='/transaction')
+# app.register_blueprint(login_blueprint, url_prefix='/login')
 
-@app.route('/barber', methods=['GET'])
-def get_barber():
-  barbers = select(Barber).where(Barber.firstName == 'Robert')
-  result = db.session.execute(barbers)
-  # return dict(barbers)
-  return str(result)
+# @app.route('/barber')
+# def get_barber():
+#   barbers = select(Barber).where(Barber.firstName == 'Robert')
+#   result = session.execute(barbers)
+#   # return dict(barbers)
+#   return str(result)
+
 @app.route('/')
 def index():
-    return {'status':'up'}
+  # return {"status":"up"}
+    barbers = text('SELECT * FROM public."Barber"')
+    
+    result = db.session.execute(barbers)
+    result1 =result.mappings().all()
+    result2 = "{" + f'"data":{result1}' +"}"
+    
+    print(result2)
+    return str(result2)
 
-def main() -> None:
+    for row in result1:
+      #  return row["Object"].name
+      return str(row)
+      
+
+    
+    
+@app.route('/barber')
+def user_list():
+    sql = text('SELECT * FROM public."Barber"')
+ 
+    with db.engine.begin() as conn:
+        response = conn.exec_driver_sql(sql)
+    
+    return response
+    
+
+
   
   # db = Prisma()
   # db.connect()
@@ -119,7 +111,7 @@ def main() -> None:
   # # write your queries here
 
   # db.disconnect()
-  blah = 1
+ 
 
 
 if __name__ == '__main__':
