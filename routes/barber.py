@@ -42,29 +42,11 @@ class Barber(Base):
 def list_create ():
   
   if request.method == 'GET':
-    # barbers =  Barber.prisma().find_many()
-    # # result = session.execute(select(User).order_by(User.id))
-    # print(barbers)
-    # return {
-    #   "data":  [barber.dict() for barber in barbers]
-    # }
-
-
-    # barbers = Barber.query.all()
-    # barber_list = [{'id': barber.id, 'username': barber.username} for barber in barbers]
-    # return jsonify(barber_list)
-
-
-
-    # barbers = select(Barber).where(Barber.firstName == 'Robert')
-    # result = session.execute(barbers)
-    
 
     sql = text('SELECT * FROM public."Barber"')
     result = db.engine.execute(sql)
     names = [row[0] for row in result]
     
-    # return dict(barbers)
     return str(names)
   if request.method == 'POST':
     # data = request.json

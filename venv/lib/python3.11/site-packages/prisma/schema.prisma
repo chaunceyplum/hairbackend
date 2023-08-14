@@ -19,8 +19,8 @@ model Appointment {
 }
 
 model Barber {
-  barberId  Int    @id @unique @default(autoincrement())
-  firstName String
+  barberid  Int    @id @unique @default(autoincrement())
+  firstname String
 }
 
 model Customer {
