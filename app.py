@@ -1,32 +1,9 @@
-from flask import Flask, jsonify
-# from prisma import Prisma, register
-from flask import Flask, render_template, request, url_for, redirect
+from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
-
-from routes.customer import customer_blueprint
-from routes.barber import barber_blueprint
-from routes.appointment import appointment_blueprint
-from routes.transaction import transaction_blueprint
-from routes.login import login_blueprint
 import asyncio
-from typing import List
-from typing import Optional
-from sqlalchemy import ForeignKey
-from sqlalchemy import String
-from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import mapped_column
-from sqlalchemy.orm import relationship
-from sqlalchemy.orm import sessionmaker
+import sqlalchemy as sa
 
-import datetime
-from sqlalchemy import Integer, String, DateTime, Boolean
-from sqlalchemy import select
-# from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import create_engine
-
-# from flask_cors import CORS
 db = SQLAlchemy()
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://gtfixtxgrbgrze:04ca58c50b220c61df03a4f4e9bcde65e3e31e596f7fcc91aa606429e3857c4a@ec2-52-54-212-232.compute-1.amazonaws.com:5432/d8pqm4p4gon5th'
@@ -37,22 +14,80 @@ def main() -> None:
     db.reflect()
 print(dict(db.metadatas))
 
-# class Transaction:
-#     __table__ = db.metadatas["auth"].tables["Transaction"]
-# class Barber:
-#     __table__ = db.metadatas["auth"].tables["Barber"]
-# class Customer:
-#     __table__ = db.metadatas["auth"].tables["Customer"]
-# class Appointment:
-#     __table__ = db.metadatas["auth"].tables["Appointment"]
-  
-app.register_blueprint(customer_blueprint, url_prefix='/customer')
-app.register_blueprint(barber_blueprint, url_prefix='/barber')
-app.register_blueprint(appointment_blueprint, url_prefix='/appointment')
-app.register_blueprint(transaction_blueprint, url_prefix='/transaction')
-app.register_blueprint(login_blueprint, url_prefix='/login')
+class Appointment(db.Model):
+    __tablename__ = "Appointment"
+    __table_args__ = {'extend_existing': True}
+    appointmentid = sa.Column(sa.Integer, primary_key=True)
+    fcustomerId = sa.Column(sa.Integer)
+    fbarberId = sa.Column(sa.Integer)
+    Date = sa.Column(sa.DateTime)
+    appointmentDate = sa.Column(sa.DateTime)
+    firstname = sa.Column(sa.String)
+
+appointment_table =db.Table(
+    "Appointment",
+    appointmentid = sa.Column(sa.Integer, primary_key=True),
+    fcustomerId = sa.Column(sa.Integer),
+    fbarberId = sa.Column(sa.Integer),
+    Date = sa.Column(sa.DateTime),
+    appointmentDate = sa.Column(sa.DateTime),
+    firstname = sa.Column(sa.String)
+)
+
+class Barber(db.Model):
+    __tablename__ = "Barber"
+    __table_args__ = {'extend_existing': True}
+    barberid = sa.Column(sa.Integer, primary_key=True)
+    firstname = sa.Column(sa.String)
 
 
+barber_table = db.Table(
+    "Barber",
+    barberid = sa.Column(sa.Integer, primary_key=True),
+    firstname = sa.Column(sa.String),
+)
+class Customer(db.Model):
+  __tablename__ = "Customer"
+  __table_args__ = {'extend_existing': True}
+  customerId  = sa.Column(sa.Integer, primary_key=True)
+  firstName = sa.Column(sa.String)
+  lastName = sa.Column(sa.String)
+  city = sa.Column(sa.String)
+  phoneNumber = sa.Column(sa.String)
+  ffavoriteBarber =sa.Column(sa.Integer)
+  email = sa.Column(sa.String)
+  password = sa.Column(sa.String)
+  isLoggedIn =  sa.Column(sa.Boolean, default=False)
+
+customer_table = db.Table(
+  "Customer",
+  customerId  = sa.Column(sa.Integer, primary_key=True),
+  firstName = sa.Column(sa.String),
+  lastName = sa.Column(sa.String),
+  city = sa.Column(sa.String),
+  phoneNumber = sa.Column(sa.String),
+  ffavoriteBarber =sa.Column(sa.Integer),
+  email = sa.Column(sa.String),
+  password = sa.Column(sa.String),
+  isLoggedIn =  sa.Column(sa.Boolean, default=False)
+)
+class Transaction(db.Model):
+  __tablename__ = "Transaction"
+  __table_args__ = {'extend_existing': True}
+  transactionId = sa.Column(sa.Integer, primary_key=True)
+  fcustomerId = sa.Column(sa.Integer)
+  orderPrice =sa.Column(sa.Integer)
+  fbarberId = sa.Column(sa.Integer)
+  Date = sa.Column(sa.DateTime)
+
+transaction_table = db.Table(
+  "Transaction",
+  transactionId = sa.Column(sa.Integer, primary_key=True),
+  fcustomerId = sa.Column(sa.Integer),
+  orderPrice =sa.Column(sa.Integer),
+  fbarberId = sa.Column(sa.Integer),
+  Date = sa.Column(sa.DateTime)
+)
 
 @app.route('/')
 def index():
@@ -96,13 +131,12 @@ def add_barber():
   if firstname is None:
     return {"error": "You need to fill in all fields accurately"}
 
-  barbers = 'INSERT INTO public."Barber" '+ f'VALUES ("{newId}","{firstname}");'
-  # barbers = 'INSERT INTO public."Barber" (firstname) '+ f'VALUEs ("{firstname}");'
-  sql = text(barbers)
-  db.session.execute(sql)
-  
-  print(sql)
-  return str('record inserted successfully'),200
+  barber = Barber(barberid=f'{newId}', firstname=f'{firstname}')
+  db.session.add(barber)
+  db.session.commit()
+
+  print(barber)
+  return str(f'record: {barber}, inserted successfully '),200
  
 @app.route('/getTransactions', methods=['GET'])
 def Transaction_list():
@@ -115,6 +149,32 @@ def Transaction_list():
   print(result2)
   return str(result2)
 
+@app.route('/addTransaction', methods=['POST'])
+def add_transaction():
+  data = request.json
+  # if data is None:
+  #   return {"error": "You need to fill in all fields accurately"}
+  transactions = text('SELECT * FROM public."Transaction"')
+  result = db.session.execute(transactions)
+  result1 =result.mappings().all()
+  newId = len(result1) + 1 
+  customerId = data["data"]["customerId"]
+  orderPrice = data["data"]["orderPrice"]
+  fbarberId = data["data"]["fbarberId"]
+  Date = data["data"]["Date"]
+  
+
+  print(data)
+  if data is None:
+    return {"error": "You need to fill in all fields accurately"}
+
+  transaction = Transaction(transactionId=f'{newId}', customerId=f'{customerId}',orderPrice=f'{orderPrice}',fbarberId=f'{fbarberId}',Date=f'{Date}')
+  db.session.add(transaction)
+  db.session.commit()
+
+  print(transaction)
+  return str(f'record: {transaction}, inserted successfully '),200
+
 @app.route('/getCustomers', methods=['GET'])
 def Customer_list():
   barbers = text('SELECT * FROM public."Customer"')
@@ -125,6 +185,35 @@ def Customer_list():
   
   print(result2)
   return str(result2)
+
+@app.route('/addCustomer', methods=['POST'])
+def add_customer():
+  data = request.json
+  # if data is None:
+  #   return {"error": "You need to fill in all fields accurately"}
+  customers = text('SELECT * FROM public."Customer"')
+  result = db.session.execute(customers)
+  result1 =result.mappings().all()
+  newId = len(result1) + 1 
+  firstname = data["data"]["firstName"]
+  lastname = data["data"]["lastName"]
+  city = data["data"]["city"]
+  phonenumber = data["data"]["phoneNumber"]
+  ffavoriteBarber = data["data"]["ffavoriteBarber"]
+  email = data["data"]["email"]
+  password = data["data"]["password"]
+  isloggedin = data["data"]["isloggedin"]
+
+  print(data)
+  if firstname is None:
+    return {"error": "You need to fill in all fields accurately"}
+
+  customer = Customer(customerId=f'{newId}', firstname=f'{firstname}',lastname=f'{lastname}',city=f'{city}',phonenumber=f'{phonenumber}',ffavoriteBarber=f'{ffavoriteBarber}',email=f'{email}',password = f"{password}",isloggedin=f"{isloggedin}")
+  db.session.add(customer)
+  db.session.commit()
+
+  print(customer)
+  return str(f'record: {customer}, inserted successfully '),200
 
 
 if __name__ == '__main__':
