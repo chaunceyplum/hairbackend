@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
 import asyncio
 import sqlalchemy as sa
-from flask_login import LoginManager
+# from flask_login import LoginManager
 import bcrypt
 
 login_manager = LoginManager()
