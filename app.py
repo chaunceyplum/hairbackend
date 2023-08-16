@@ -4,13 +4,15 @@ from sqlalchemy import text
 import asyncio
 import sqlalchemy as sa
 # from flask_login import LoginManager
-import bcrypt
+from flask_bcrypt import Bcrypt
+
 
 # login_manager = LoginManager()
 db = SQLAlchemy()
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://gtfixtxgrbgrze:04ca58c50b220c61df03a4f4e9bcde65e3e31e596f7fcc91aa606429e3857c4a@ec2-52-54-212-232.compute-1.amazonaws.com:5432/d8pqm4p4gon5th'
 db.init_app(app)
+bcrypt = Bcrypt(app)
 # login_manager.init_app(app)
 
 
@@ -118,7 +120,7 @@ def login_customer():
   data = request.json
   email = data["data"]["email"]
   unhashedPassword = data["data"]["password"]
-  password = bcrypt.hashpw(unhashedPassword, bcrypt.gensalt(10))
+  password = bcrypt.generate_password_hash(unhashedPassword, 10)
  
   if email is None:
     return {"error": "You need to fill in all fields accurately"}
@@ -247,7 +249,7 @@ def add_customer():
   ffavoriteBarber = data["data"]["ffavoriteBarber"]
   email = data["data"]["email"]
   unhashedPassword = data["data"]["password"]
-  password = bcrypt.hashpw(unhashedPassword, bcrypt.gensalt(10))
+  password = bcrypt.generate_password_hash(unhashedPassword, 10)
   isloggedin = data["data"]["isloggedin"]
   is_authenticated = data["data"]["is_authenticated"]
   is_active = data["data"]["is_active"]
