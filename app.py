@@ -3,11 +3,16 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
 import asyncio
 import sqlalchemy as sa
+from flask_login import LoginManager
+import bcrypt
 
+login_manager = LoginManager()
 db = SQLAlchemy()
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://gtfixtxgrbgrze:04ca58c50b220c61df03a4f4e9bcde65e3e31e596f7fcc91aa606429e3857c4a@ec2-52-54-212-232.compute-1.amazonaws.com:5432/d8pqm4p4gon5th'
 db.init_app(app)
+login_manager.init_app(app)
+
 
 def main() -> None:
   with app.app_context():
@@ -40,12 +45,12 @@ class Barber(db.Model):
     barberid = sa.Column(sa.Integer, primary_key=True)
     firstname = sa.Column(sa.String)
 
-
 barber_table = db.Table(
     "Barber",
     barberid = sa.Column(sa.Integer, primary_key=True),
     firstname = sa.Column(sa.String),
 )
+
 class Customer(db.Model):
   __tablename__ = "Customer"
   __table_args__ = {'extend_existing': True}
@@ -58,6 +63,12 @@ class Customer(db.Model):
   email = sa.Column(sa.String)
   password = sa.Column(sa.String)
   isLoggedIn =  sa.Column(sa.Boolean, default=False)
+  is_authenticated = sa.Column(sa.Boolean, default=False)
+  is_active = sa.Column(sa.Boolean, default=False)
+  is_anonymous = sa.Column(sa.Boolean, default=True)
+
+  def get_id(self):
+    return self.email
 
 customer_table = db.Table(
   "Customer",
@@ -69,8 +80,12 @@ customer_table = db.Table(
   ffavoriteBarber =sa.Column(sa.Integer),
   email = sa.Column(sa.String),
   password = sa.Column(sa.String),
-  isLoggedIn =  sa.Column(sa.Boolean, default=False)
+  isLoggedIn =  sa.Column(sa.Boolean, default=False),
+  is_authenticated = sa.Column(sa.Boolean, default=False),
+  is_active = sa.Column(sa.Boolean, default=False),
+  is_anonymous = sa.Column(sa.Boolean, default=True),
 )
+
 class Transaction(db.Model):
   __tablename__ = "Transaction"
   __table_args__ = {'extend_existing': True}
@@ -89,9 +104,38 @@ transaction_table = db.Table(
   Date = sa.Column(sa.DateTime)
 )
 
+
 @app.route('/')
 def index():
   return {"status":"up"}
+
+@login_manager.user_loader
+def load_customer(user_id):
+    return Customer.get(user_id)
+
+@app.route('/login', methods=['GET'])
+def login_customer():
+  data = request.json
+  email = data["data"]["email"]
+  unhashedPassword = data["data"]["password"]
+  password = bcrypt.hashpw(unhashedPassword, bcrypt.gensalt(10))
+ 
+  if email is None:
+    return {"error": "You need to fill in all fields accurately"}
+
+  customer = db.session.execute(db.select(Customer).filter_by(email=email)).scalar_one()
+
+  if customer is None:
+    return {"error":"Email does not exist"}
+
+  databasePass = customer["password"]
+  
+  if databasePass != password:
+    return {"error":"password does not match"}
+  
+
+  print(customer)
+  return str(f'record: {customer}, successfully authenticated'),200
     
 @app.route('/getAppointments', methods=['GET'])
 def Appointment_list():
@@ -191,6 +235,7 @@ def add_customer():
   data = request.json
   # if data is None:
   #   return {"error": "You need to fill in all fields accurately"}
+
   customers = text('SELECT * FROM public."Customer"')
   result = db.session.execute(customers)
   result1 =result.mappings().all()
@@ -201,8 +246,12 @@ def add_customer():
   phonenumber = data["data"]["phoneNumber"]
   ffavoriteBarber = data["data"]["ffavoriteBarber"]
   email = data["data"]["email"]
-  password = data["data"]["password"]
+  unhashedPassword = data["data"]["password"]
+  password = bcrypt.hashpw(unhashedPassword, bcrypt.gensalt(10))
   isloggedin = data["data"]["isloggedin"]
+  is_authenticated = data["data"]["is_authenticated"]
+  is_active = data["data"]["is_active"]
+  is_anonymous = data["data"]["is_anonymous"]
 
   print(data)
   if firstname is None:

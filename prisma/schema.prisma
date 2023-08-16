@@ -24,15 +24,18 @@ model Barber {
 }
 
 model Customer {
-  customerId      Int     @id @unique @default(autoincrement())
-  firstName       String
-  lastName        String
-  city            String
-  phoneNumber     String
-  ffavoriteBarber Int     @default(1)
-  email           String  @unique
-  password        String
-  isLoggedIn      Boolean @default(false)
+  customerId       Int     @id @unique @default(autoincrement())
+  firstName        String
+  lastName         String
+  city             String
+  phoneNumber      String
+  ffavoriteBarber  Int     @default(1)
+  email            String  @unique
+  password         String
+  isLoggedIn       Boolean @default(false)
+  is_authenticated Boolean
+  is_active        Boolean
+  is_anonymous     Boolean
 
   @@unique([customerId, phoneNumber])
 }
