@@ -6,12 +6,12 @@ import sqlalchemy as sa
 # from flask_login import LoginManager
 import bcrypt
 
-login_manager = LoginManager()
+# login_manager = LoginManager()
 db = SQLAlchemy()
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://gtfixtxgrbgrze:04ca58c50b220c61df03a4f4e9bcde65e3e31e596f7fcc91aa606429e3857c4a@ec2-52-54-212-232.compute-1.amazonaws.com:5432/d8pqm4p4gon5th'
 db.init_app(app)
-login_manager.init_app(app)
+# login_manager.init_app(app)
 
 
 def main() -> None:
@@ -109,9 +109,9 @@ transaction_table = db.Table(
 def index():
   return {"status":"up"}
 
-@login_manager.user_loader
-def load_customer(user_id):
-    return Customer.get(user_id)
+# @login_manager.user_loader
+# def load_customer(user_id):
+#     return Customer.get(user_id)
 
 @app.route('/login', methods=['GET'])
 def login_customer():
