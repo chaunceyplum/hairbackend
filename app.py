@@ -4,18 +4,16 @@ from sqlalchemy import text
 import asyncio
 import sqlalchemy as sa
 from werkzeug.security import generate_password_hash, check_password_hash
-# from flask_login import LoginManager
-# from flask_bcrypt import Bcrypt
+from flask_cors import CORS, cross_origin
 
 
-
-# login_manager = LoginManager()
 db = SQLAlchemy()
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://gtfixtxgrbgrze:04ca58c50b220c61df03a4f4e9bcde65e3e31e596f7fcc91aa606429e3857c4a@ec2-52-54-212-232.compute-1.amazonaws.com:5432/d8pqm4p4gon5th'
 db.init_app(app)
-# bcrypt = Bcrypt(app)
-# login_manager.init_app(app)
+CORS(app, supports_credentials=True,origins=['http://localhost:3000/',"https://classycutz.netlify.app/"])
+# app.config['CORS_HEADERS'] = 'Content-Type'
+
 
 
 def main() -> None:
@@ -110,6 +108,7 @@ transaction_table = db.Table(
 
 
 @app.route('/')
+@cross_origin()
 def index():
   return {"status":"up"}
 
@@ -118,6 +117,7 @@ def index():
 #     return Customer.get(user_id)
 
 @app.route('/login', methods=['GET'])
+@cross_origin()
 def login_customer():
   data = request.json
   email = data["data"]["email"]
@@ -142,6 +142,7 @@ def login_customer():
   return str(f'record: {customer}, successfully authenticated'),200
     
 @app.route('/getAppointments', methods=['GET'])
+@cross_origin()
 def Appointment_list():
   Appointments = text('SELECT * FROM public."Appointment"')
   
@@ -155,6 +156,7 @@ def Appointment_list():
     
     
 @app.route('/getBarbers', methods=['GET'])
+@cross_origin()
 def barber_list():
   barbers = text('SELECT * FROM public."Barber"')
   
@@ -166,6 +168,7 @@ def barber_list():
   return str(result2)
 
 @app.route('/addBarbers', methods=['POST'])
+@cross_origin()
 def add_barber():
   data = request.json
   # if data is None:
@@ -187,6 +190,7 @@ def add_barber():
   return str(f'record: {barber}, inserted successfully '),200
  
 @app.route('/getTransactions', methods=['GET'])
+@cross_origin()
 def Transaction_list():
   barbers = text('SELECT * FROM public."Transaction"')
   
@@ -198,6 +202,7 @@ def Transaction_list():
   return str(result2)
 
 @app.route('/addTransaction', methods=['POST'])
+@cross_origin()
 def add_transaction():
   data = request.json
   # if data is None:
@@ -224,6 +229,7 @@ def add_transaction():
   return str(f'record: {transaction}, inserted successfully '),200
 
 @app.route('/getCustomers', methods=['GET'])
+@cross_origin()
 def Customer_list():
   barbers = text('SELECT * FROM public."Customer"')
   
@@ -235,6 +241,7 @@ def Customer_list():
   return str(result2)
 
 @app.route('/addCustomer', methods=['POST'])
+@cross_origin()
 def add_customer():
   data = request.json
   # if data is None:
