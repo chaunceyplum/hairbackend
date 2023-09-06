@@ -9,10 +9,14 @@ from flask_cors import CORS, cross_origin
 
 db = SQLAlchemy()
 app = Flask(__name__)
+cors = CORS(app, resources={r"*": {"origins": "*", "allow_headers": "*", "expose_headers": "*"}},origins=['http://localhost',"https://classycutz.netlify"])
+
+     #,origins=['http://localhost',"https://classycutz.netlify"])
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://gtfixtxgrbgrze:04ca58c50b220c61df03a4f4e9bcde65e3e31e596f7fcc91aa606429e3857c4a@ec2-52-54-212-232.compute-1.amazonaws.com:5432/d8pqm4p4gon5th'
+
 db.init_app(app)
-CORS(app, supports_credentials=True,origins=['http://localhost:3000/',"https://classycutz.netlify.app/"])
-# app.config['CORS_HEADERS'] = 'Content-Type'
+
+#app.config['CORS_HEADERS'] = 'Content-Type'
 
 
 
@@ -57,10 +61,10 @@ class Customer(db.Model):
   __tablename__ = "Customer"
   __table_args__ = {'extend_existing': True}
   customerId  = sa.Column(sa.Integer, primary_key=True)
-  firstName = sa.Column(sa.String)
-  lastName = sa.Column(sa.String)
+  firstname = sa.Column(sa.String)
+  lastname = sa.Column(sa.String)
   city = sa.Column(sa.String)
-  phoneNumber = sa.Column(sa.String)
+  phonenumber = sa.Column(sa.String)
   ffavoriteBarber =sa.Column(sa.Integer)
   email = sa.Column(sa.String)
   password = sa.Column(sa.String)
@@ -112,11 +116,16 @@ transaction_table = db.Table(
 def index():
   return {"status":"up"}
 
-# @login_manager.user_loader
-# def load_customer(user_id):
-#     return Customer.get(user_id)
+@app.after_request
+def after_request(response):
+  #response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
+  response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+  response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+  response.headers.add('Access-Control-Allow-Credentials', 'true')
+  return response
 
-@app.route('/login', methods=['GET'])
+
+@app.route('/login/', methods=['POST'])
 @cross_origin()
 def login_customer():
   data = request.json
@@ -139,7 +148,7 @@ def login_customer():
   
 
   print(customer)
-  return str(f'record: {customer}, successfully authenticated'),200
+  return {customer},200
     
 @app.route('/getAppointments', methods=['GET'])
 @cross_origin()
@@ -251,24 +260,24 @@ def add_customer():
   result = db.session.execute(customers)
   result1 =result.mappings().all()
   newId = len(result1) + 1 
-  firstname = data["data"]["firstName"]
-  lastname = data["data"]["lastName"]
+  firstname = data["data"]["firstname"]
+  lastname = data["data"]["lastname"]
   city = data["data"]["city"]
-  phonenumber = data["data"]["phoneNumber"]
+  phonenumber = data["data"]["phonenumber"]
   ffavoriteBarber = data["data"]["ffavoriteBarber"]
   email = data["data"]["email"]
   unhashedPassword = data["data"]["password"]
   password = generate_password_hash(unhashedPassword)
-  isloggedin = data["data"]["isloggedin"]
-  is_authenticated = data["data"]["is_authenticated"]
-  is_active = data["data"]["is_active"]
-  is_anonymous = data["data"]["is_anonymous"]
+  # isloggedin = data["data"]["isloggedin"]
+  # is_authenticated = data["data"]["is_authenticated"]
+  # is_active = data["data"]["is_active"]
+  # is_anonymous = data["data"]["is_anonymous"]
 
   print(data)
   if firstname is None:
     return {"error": "You need to fill in all fields accurately"}
 
-  customer = Customer(customerId=f'{newId}', firstname=f'{firstname}',lastname=f'{lastname}',city=f'{city}',phonenumber=f'{phonenumber}',ffavoriteBarber=f'{ffavoriteBarber}',email=f'{email}',password = f"{password}",isloggedin=f"{isloggedin}")
+  customer = Customer(customerId=f'{newId}', firstname=f'{firstname}',lastname=f'{lastname}',city=f'{city}',phonenumber=f'{phonenumber}',ffavoriteBarber=f'{ffavoriteBarber}',email=f'{email}',password = f"{password}")
   db.session.add(customer)
   db.session.commit()
 

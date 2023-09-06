@@ -25,10 +25,10 @@ model Barber {
 
 model Customer {
   customerId       Int     @id @unique @default(autoincrement())
-  firstName        String
-  lastName         String
+  firstname        String
+  lastname         String
   city             String
-  phoneNumber      String
+  phonenumber      String
   ffavoriteBarber  Int     @default(1)
   email            String  @unique
   password         String
@@ -37,7 +37,7 @@ model Customer {
   is_active        Boolean
   is_anonymous     Boolean
 
-  @@unique([customerId, phoneNumber])
+  @@unique([customerId, phonenumber])
 }
 
 model Transaction {
