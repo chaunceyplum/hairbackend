@@ -24,26 +24,27 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 def main() -> None:
   with app.app_context():
     db.reflect()
+    app.run(debug=True)
 print(dict(db.metadatas))
 
 class Appointment(db.Model):
     __tablename__ = "Appointment"
     __table_args__ = {'extend_existing': True}
-    appointmentid = sa.Column(sa.Integer, primary_key=True)
+    appointmentId = sa.Column(sa.Integer, primary_key=True)
     fcustomerId = sa.Column(sa.Integer)
     fbarberId = sa.Column(sa.Integer)
     Date = sa.Column(sa.DateTime)
     appointmentDate = sa.Column(sa.DateTime)
-    firstname = sa.Column(sa.String)
+    phoneNumber = sa.Column(sa.String)
 
 appointment_table =db.Table(
     "Appointment",
-    appointmentid = sa.Column(sa.Integer, primary_key=True),
+    appointmentId = sa.Column(sa.Integer, primary_key=True),
     fcustomerId = sa.Column(sa.Integer),
     fbarberId = sa.Column(sa.Integer),
     Date = sa.Column(sa.DateTime),
     appointmentDate = sa.Column(sa.DateTime),
-    firstname = sa.Column(sa.String)
+    phoneNumber = sa.Column(sa.String)
 )
 
 class Barber(db.Model):
@@ -113,7 +114,7 @@ transaction_table = db.Table(
 
 
 @app.route('/')
-@cross_origin()
+@cross_origin(origin='*',headers=['Content-Type','Authorization'])
 def index():
   return {"status":"up"}
 
@@ -175,7 +176,7 @@ def login_customer():
   return {customer}
     
 @app.route('/getAppointments', methods=['GET'])
-@cross_origin()
+@cross_origin(origin='*',headers=['Content-Type','Authorization'])
 def Appointment_list():
   Appointments = text('SELECT * FROM public."Appointment"')
   
@@ -186,8 +187,8 @@ def Appointment_list():
   print(result2)
   return str(result2)      
 
-@app.route('/addAppointment', methods=['POST'])
-@cross_origin()
+@app.route('/addAppointments', methods=['POST'])
+@cross_origin(origin='*',headers=['Content-Type','Authorization'])
 def add_Appointment():
   data = request.json
   # if data is None:
@@ -201,13 +202,16 @@ def add_Appointment():
   fbarberId = data["data"]["fbarberId"]
   Date = data["data"]["Date"]
   appointmentDate = data["data"]["appointmentDate"]
+  phoneNumber = data["data"]["phoneNumber"]
+  
   
 
   print(data)
   if data is None:
     return {"error": "You need to fill in all fields accurately"}
 
-  appointment = Appointment(appointmentId=f'{newId}', customerId=f'{customerId}',fbarberId=f'{fbarberId}',Date=f'{Date}',appointmentDate=f'{appointmentDate}')
+  appointment = Appointment(appointmentId=f'{newId}', fcustomerId=f'{customerId}',fbarberId=f'{fbarberId}',Date=f'{Date}',appointmentDate=f'{appointmentDate}', phoneNumber=f'{phoneNumber}')
+  print(appointment)
   db.session.add(appointment)
   db.session.commit()
 
@@ -216,7 +220,7 @@ def add_Appointment():
     
     
 @app.route('/getBarbers', methods=['GET'])
-@cross_origin()
+@cross_origin(origin='*',headers=['Content-Type','Authorization'])
 def barber_list():
   barbers = text('SELECT * FROM public."Barber"')
   
@@ -228,7 +232,7 @@ def barber_list():
   return str(result2)
 
 @app.route('/addBarbers', methods=['POST'])
-@cross_origin()
+@cross_origin(origin='*',headers=['Content-Type','Authorization'])
 def add_barber():
   data = request.json
   # if data is None:
@@ -250,7 +254,7 @@ def add_barber():
   return str(f'record: {barber}, inserted successfully '),200
  
 @app.route('/getTransactions', methods=['GET'])
-@cross_origin()
+@cross_origin(origin='*',headers=['Content-Type','Authorization'])
 def Transaction_list():
   barbers = text('SELECT * FROM public."Transaction"')
   
@@ -262,7 +266,7 @@ def Transaction_list():
   return str(result2)
 
 @app.route('/addTransaction', methods=['POST'])
-@cross_origin()
+@cross_origin(origin='*',headers=['Content-Type','Authorization'])
 def add_transaction():
   data = request.json
   # if data is None:
@@ -289,7 +293,7 @@ def add_transaction():
   return str(f'record: {transaction}, inserted successfully '),200
 
 @app.route('/getCustomers', methods=['GET'])
-@cross_origin()
+@cross_origin(origin='*',headers=['Content-Type','Authorization'])
 def Customer_list():
   barbers = text('SELECT * FROM public."Customer"')
   
@@ -301,7 +305,7 @@ def Customer_list():
   return str(result2)
 
 @app.route('/addCustomer', methods=['POST'])
-@cross_origin()
+@cross_origin(origin='*',headers=['Content-Type','Authorization'])
 def add_customer():
   data = request.json
   # if data is None:
@@ -338,3 +342,5 @@ def add_customer():
 
 if __name__ == '__main__':
   main()
+  app.run(debug=True)
+  
