@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, Response
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
 import asyncio
@@ -9,6 +9,7 @@ from flask_cors import CORS, cross_origin
 
 db = SQLAlchemy()
 app = Flask(__name__)
+CORS(app)
 cors = CORS(app, resources={r"*": {"origins": "*", "allow_headers": "*", "expose_headers": "*"}})
 
      #,origins=['http://localhost',"https://classycutz.netlify"])
@@ -16,7 +17,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://gtfixtxgrbgrze:04ca58c50b2
 
 db.init_app(app)
 
-#app.config['CORS_HEADERS'] = 'Content-Type'
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 
 
@@ -116,6 +117,13 @@ transaction_table = db.Table(
 def index():
   return {"status":"up"}
 
+@app.before_request
+def handle_preflight():
+    if request.method == "OPTIONS":
+        res = Response()
+        res.headers['X-Content-Type-Options'] = '*'
+        return res
+
 # @app.after_request
 # def after_request(response):
 #   # response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
@@ -126,7 +134,7 @@ def index():
 
 
 @app.route('/login/', methods=['POST'])
-@cross_origin()
+@cross_origin(origin='*',headers=['Content-Type','Authorization'])
 def login_customer():
   data = request.json
   email = data["data"]["email"]
@@ -144,12 +152,27 @@ def login_customer():
   databasePass = customer.password
   print(databasePass)
   
-  if databasePass != password:
+  blah = check_password_hash(customer.password,unhashedPassword)
+  print(blah)
+  if blah == False:
     return {"error":"password does not match"}
-  
 
-  print(customer)
-  return {customer},200
+  if blah == True:
+    firstname =customer.firstname
+    lastname = customer.lastname
+    customerId = customer.customerId
+    phonenumber = customer.phonenumber
+    newCustomer = {"email":email,"firstname":firstname,"lastname":lastname,"customerId":customerId,"phonenumber":phonenumber}
+
+
+
+
+    return dict(newCustomer),200
+  
+ 
+
+  
+  return {customer}
     
 @app.route('/getAppointments', methods=['GET'])
 @cross_origin()
@@ -163,6 +186,33 @@ def Appointment_list():
   print(result2)
   return str(result2)      
 
+@app.route('/addAppointment', methods=['POST'])
+@cross_origin()
+def add_Appointment():
+  data = request.json
+  # if data is None:
+  #   return {"error": "You need to fill in all fields accurately"}
+  appointments = text('SELECT * FROM public."Appointment"')
+  result = db.session.execute(appointments)
+  result1 =result.mappings().all()
+  newId = len(result1) + 1 
+  customerId = data["data"]["fcustomerId"]
+  # appointmentId = data["data"]["appointmentId"]
+  fbarberId = data["data"]["fbarberId"]
+  Date = data["data"]["Date"]
+  appointmentDate = data["data"]["appointmentDate"]
+  
+
+  print(data)
+  if data is None:
+    return {"error": "You need to fill in all fields accurately"}
+
+  appointment = Appointment(appointmentId=f'{newId}', customerId=f'{customerId}',fbarberId=f'{fbarberId}',Date=f'{Date}',appointmentDate=f'{appointmentDate}')
+  db.session.add(appointment)
+  db.session.commit()
+
+  print(appointment)
+  return str(f'record: {appointment}, inserted successfully '),200
     
     
 @app.route('/getBarbers', methods=['GET'])

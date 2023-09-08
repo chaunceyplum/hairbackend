@@ -16,7 +16,7 @@ model Appointment {
   Date            DateTime
   appointmentDate DateTime
   phoneNumber     String
-  customer        Customer     @relation(fields: [fcustomerId], references: [customerId])
+  customer        Customer     @relation(fields: [fcustomerId,phoneNumber], references: [customerId,phonenumber])
   barber          Barber       @relation(fields: [fbarberId], references: [barberid])
   transaction     Transaction?
 }
