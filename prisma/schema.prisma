@@ -10,47 +10,60 @@ datasource db {
 }
 
 model Appointment {
-  appointmentId   Int      @id @unique @default(autoincrement())
+  appointmentId   Int          @id @unique @default(autoincrement())
   fcustomerId     Int
   fbarberId       Int
   Date            DateTime
   appointmentDate DateTime
   phoneNumber     String
+  customer        Customer     @relation(fields: [fcustomerId], references: [customerId])
+  barber          Barber       @relation(fields: [fbarberId], references: [barberid])
+  transaction     Transaction?
 }
 
 model Barber {
-  barberid  Int    @id @unique @default(autoincrement())
-  firstname String
+  barberid     Int           @id @unique @default(autoincrement())
+  firstname    String
+  appointments Appointment[]
+  transactions Transaction[]
 }
 
 model Customer {
-  customerId       Int     @id @unique @default(autoincrement())
+  customerId       Int           @id @unique @default(autoincrement())
   firstname        String
   lastname         String
   city             String
   phonenumber      String
-  ffavoriteBarber  Int     @default(1)
-  email            String  @unique
+  ffavoriteBarber  Int           @default(1)
+  email            String        @unique
   password         String
-  isLoggedIn       Boolean @default(false)
+  isLoggedIn       Boolean       @default(false)
   is_authenticated Boolean
   is_active        Boolean
   is_anonymous     Boolean
+  appointments     Appointment[]
+  transactions     Transaction[]
+  contact          Contact?
 
   @@unique([customerId, phonenumber])
 }
 
 model Transaction {
-  transactionId Int      @id @unique @default(autoincrement())
-  fcustomerId   Int
-  orderPrice    Int
-  fbarberId     Int
-  Date          DateTime @default(now())
+  transactionId  Int         @id @unique @default(autoincrement())
+  fappointmentId Int         @unique
+  fcustomerId    Int
+  orderPrice     Int
+  fbarberId      Int
+  Date           DateTime    @default(now())
+  customer       Customer    @relation(fields: [fcustomerId], references: [customerId])
+  barber         Barber      @relation(fields: [fbarberId], references: [barberid])
+  appointment    Appointment @relation(fields: [fappointmentId], references: [appointmentId])
 }
 
 model Contact {
-  ContactId Int    @id @unique @default(autoincrement())
+  ContactId Int      @id @unique @default(autoincrement())
   Name      String
-  Email     String @unique
+  Email     String   @unique
   Message   String
+  customer  Customer @relation(fields: [Email], references: [email])
 }
