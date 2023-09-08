@@ -9,7 +9,7 @@ from flask_cors import CORS, cross_origin
 
 db = SQLAlchemy()
 app = Flask(__name__)
-cors = CORS(app, resources={r"*": {"origins": "*", "allow_headers": "*", "expose_headers": "*"}},origins=["https://classycutz.netlify.app",'http://localhost'])
+cors = CORS(app, resources={r"*": {"origins": "https://classycutz.netlify.app", "allow_headers": "*", "expose_headers": "*"}})
 
      #,origins=['http://localhost',"https://classycutz.netlify"])
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://gtfixtxgrbgrze:04ca58c50b220c61df03a4f4e9bcde65e3e31e596f7fcc91aa606429e3857c4a@ec2-52-54-212-232.compute-1.amazonaws.com:5432/d8pqm4p4gon5th'
