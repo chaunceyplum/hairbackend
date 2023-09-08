@@ -9,7 +9,7 @@ from flask_cors import CORS, cross_origin
 
 db = SQLAlchemy()
 app = Flask(__name__)
-cors = CORS(app, resources={r"*": {"origins": "https://classycutz.netlify.app", "allow_headers": "*", "expose_headers": "*"}})
+cors = CORS(app, resources={r"*": {"origins": "*", "allow_headers": "*", "expose_headers": "*"}})
 
      #,origins=['http://localhost',"https://classycutz.netlify"])
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://gtfixtxgrbgrze:04ca58c50b220c61df03a4f4e9bcde65e3e31e596f7fcc91aa606429e3857c4a@ec2-52-54-212-232.compute-1.amazonaws.com:5432/d8pqm4p4gon5th'
@@ -116,13 +116,13 @@ transaction_table = db.Table(
 def index():
   return {"status":"up"}
 
-@app.after_request
-def after_request(response):
-  #response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
-  response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-  response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-  response.headers.add('Access-Control-Allow-Credentials', 'true')
-  return response
+# @app.after_request
+# def after_request(response):
+#   # response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
+#   response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+#   response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+#   response.headers.add('Access-Control-Allow-Credentials', 'true')
+#   return response
 
 
 @app.route('/login/', methods=['POST'])
