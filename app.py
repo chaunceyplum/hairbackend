@@ -5,7 +5,8 @@ import asyncio
 import sqlalchemy as sa
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_cors import CORS, cross_origin
-
+from datetime import date
+import array
 
 db = SQLAlchemy()
 app = Flask(__name__)
@@ -185,7 +186,29 @@ def Appointment_list():
   result2 = "{" + f'"data":{result1}' +"}"
   
   print(result2)
-  return str(result2)      
+  return str(result2) 
+
+@app.route('/getAppointmentsByDate', methods=['POST'])
+@cross_origin(origin='*',headers=['Content-Type','Authorization'])
+def Appointment_list_by_date():
+  data = request.json
+  date= data["data"]["Date"]
+  Appointments = text('SELECT * FROM public."Appointment"')
+  
+  result = db.session.execute(Appointments)
+  result1 =result.mappings().all()
+
+
+  result2 = "{" + f'"data":{result1}' +"}"
+  result3 = []
+  for x in result1:
+    if( date.__contains__(str(x.Date))):
+      result3.append(x)
+    else:
+      return "{'error':'no appointments with this date'}"
+  result4 = "{" + f'"data":{result3}' +"}"
+  print(result4)
+  return str(result4)      
 
 @app.route('/addAppointments', methods=['POST'])
 @cross_origin(origin='*',headers=['Content-Type','Authorization'])
