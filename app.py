@@ -135,7 +135,7 @@ def generateCustData():
     firstname = customer["firstname"]
     lastname = customer["lastname"]
     city = customer["city"]
-    phonenumber = customer["phonenumber"]
+    phonenumber = customer["phone"]
     ffavoriteBarber = customer["ffavoriteBarber"]
     email = customer["email"]
     unhashedPassword = customer["password"]
