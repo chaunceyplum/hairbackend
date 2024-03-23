@@ -7,6 +7,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_cors import CORS, cross_origin
 from datetime import date
 import array
+import requests
 
 db = SQLAlchemy()
 app = Flask(__name__)
@@ -119,6 +120,48 @@ transaction_table = db.Table(
 def index():
   return {"status":"up"}
 
+@app.route('/generateCustData')
+@cross_origin(origin='*',headers=['Content-Type','Authorization'])
+def generateCustData():
+  # result =[]
+  url = "https://api.mockaroo.com/api/generate.json?key=ab78c110&schema=HairCust"
+  data = requests.get(url=url ).json()
+  print(data)
+  for customer in data:
+    customers = text('SELECT * FROM public."Customer"')
+    result = db.session.execute(customers)
+    result1 =result.mappings().all()
+    newId = len(result1) + 1 
+    firstname = data["data"]["firstname"]
+    lastname = data["data"]["lastname"]
+    city = data["data"]["city"]
+    phonenumber = data["data"]["phonenumber"]
+    ffavoriteBarber = data["data"]["ffavoriteBarber"]
+    email = data["data"]["email"]
+    unhashedPassword = data["data"]["password"]
+    password = generate_password_hash(unhashedPassword)
+    # isloggedin = data["data"]["isloggedin"]
+    is_authenticated = data["data"]["is_authenticated"]
+    is_active = data["data"]["is_active"]
+    is_anonymous = data["data"]["is_anonymous"]
+
+    print(data)
+    if firstname is None:
+      return {"error": "You need to fill in all fields accurately"}
+
+    customer = Customer(customerId=f'{newId}', firstname=f'{firstname}',lastname=f'{lastname}',city=f'{city}',phonenumber=f'{phonenumber}',ffavoriteBarber=f'{ffavoriteBarber}',email=f'{email}',password = f"{password}")
+    db.session.add(customer)
+    db.session.commit()
+
+    print(customer)
+    return str(f'record: {customer}, inserted successfully '),200
+  return {"message": "submitted successfully"}
+
+
+
+
+
+
 @app.before_request
 def handle_preflight():
     if request.method == "OPTIONS":
@@ -145,35 +188,25 @@ def login_customer():
  
   if email is None:
     return {"error": "You need to fill in all fields accurately"}
-
   customer = db.session.execute(db.select(Customer).filter_by(email=email)).scalar_one()
-
   if customer is None:
     return {"error":"Email does not exist"}
-
   databasePass = customer.password
-  print(databasePass)
-  
+  print(databasePass) 
   blah = check_password_hash(customer.password,unhashedPassword)
   print(blah)
   if blah == False:
     return {"error":"password does not match"}
-
   if blah == True:
     firstname =customer.firstname
     lastname = customer.lastname
     customerId = customer.customerId
     phonenumber = customer.phonenumber
+    
     newCustomer = {"email":email,"firstname":firstname,"lastname":lastname,"customerId":customerId,"phonenumber":phonenumber}
 
-
-
-
     return dict(newCustomer),200
-  
- 
 
-  
   return {customer}
     
 @app.route('/getAppointments', methods=['GET'])
