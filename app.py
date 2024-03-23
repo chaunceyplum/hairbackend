@@ -122,7 +122,7 @@ def index():
 
 @app.route('/generateCustData')
 @cross_origin(origin='*',headers=['Content-Type','Authorization'])
-def generateCustData():
+async def generateCustData():
   # result =[]
   url = "https://api.mockaroo.com/api/generate.json?key=ab78c110&schema=HairCust"
   data = requests.get(url=url ).json()
