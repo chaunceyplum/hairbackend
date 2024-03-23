@@ -154,7 +154,7 @@ def generateCustData():
     db.session.commit()
 
     print(customer)
-    return str(f'record: {customer}, inserted successfully '),200
+    print(str(f'record: {customer}, inserted successfully '))
   return {"message": "submitted successfully"}
 
 
