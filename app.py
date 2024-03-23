@@ -7,7 +7,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_cors import CORS, cross_origin
 from datetime import date
 import array
-# import requests
+import requests
 
 db = SQLAlchemy()
 app = Flask(__name__)
@@ -120,42 +120,42 @@ transaction_table = db.Table(
 def index():
   return {"status":"up"}
 
-# @app.route('/generateCustData')
-# @cross_origin(origin='*',headers=['Content-Type','Authorization'])
-# def generateCustData():
-#   # result =[]
-#   url = "https://api.mockaroo.com/api/generate.json?key=ab78c110&schema=HairCust"
-#   data = requests.get(url=url ).json()
-#   print(data)
-#   for customer in data:
-#     customers = text('SELECT * FROM public."Customer"')
-#     result = db.session.execute(customers)
-#     result1 =result.mappings().all()
-#     newId = len(result1) + 1 
-#     firstname = data["data"]["firstname"]
-#     lastname = data["data"]["lastname"]
-#     city = data["data"]["city"]
-#     phonenumber = data["data"]["phonenumber"]
-#     ffavoriteBarber = data["data"]["ffavoriteBarber"]
-#     email = data["data"]["email"]
-#     unhashedPassword = data["data"]["password"]
-#     password = generate_password_hash(unhashedPassword)
-#     # isloggedin = data["data"]["isloggedin"]
-#     is_authenticated = data["data"]["is_authenticated"]
-#     is_active = data["data"]["is_active"]
-#     is_anonymous = data["data"]["is_anonymous"]
+@app.route('/generateCustData')
+@cross_origin(origin='*',headers=['Content-Type','Authorization'])
+def generateCustData():
+  # result =[]
+  url = "https://api.mockaroo.com/api/generate.json?key=ab78c110&schema=HairCust"
+  data = requests.get(url=url ).json()
+  print(data)
+  for customer in data:
+    customers = text('SELECT * FROM public."Customer"')
+    result = db.session.execute(customers)
+    result1 =result.mappings().all()
+    newId = len(result1) + 1 
+    firstname = data["data"]["firstname"]
+    lastname = data["data"]["lastname"]
+    city = data["data"]["city"]
+    phonenumber = data["data"]["phonenumber"]
+    ffavoriteBarber = data["data"]["ffavoriteBarber"]
+    email = data["data"]["email"]
+    unhashedPassword = data["data"]["password"]
+    password = generate_password_hash(unhashedPassword)
+    # isloggedin = data["data"]["isloggedin"]
+    is_authenticated = data["data"]["is_authenticated"]
+    is_active = data["data"]["is_active"]
+    is_anonymous = data["data"]["is_anonymous"]
 
-#     print(data)
-#     if firstname is None:
-#       return {"error": "You need to fill in all fields accurately"}
+    print(data)
+    if firstname is None:
+      return {"error": "You need to fill in all fields accurately"}
 
-#     customer = Customer(customerId=f'{newId}', firstname=f'{firstname}',lastname=f'{lastname}',city=f'{city}',phonenumber=f'{phonenumber}',ffavoriteBarber=f'{ffavoriteBarber}',email=f'{email}',password = f"{password}")
-#     db.session.add(customer)
-#     db.session.commit()
+    customer = Customer(customerId=f'{newId}', firstname=f'{firstname}',lastname=f'{lastname}',city=f'{city}',phonenumber=f'{phonenumber}',ffavoriteBarber=f'{ffavoriteBarber}',email=f'{email}',password = f"{password}")
+    db.session.add(customer)
+    db.session.commit()
 
-#     print(customer)
-#     return str(f'record: {customer}, inserted successfully '),200
-#   return {"message": "submitted successfully"}
+    print(customer)
+    return str(f'record: {customer}, inserted successfully '),200
+  return {"message": "submitted successfully"}
 
 
 
