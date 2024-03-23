@@ -126,7 +126,7 @@ def generateCustData():
   # result =[]
   url = "https://api.mockaroo.com/api/generate.json?key=ab78c110&schema=HairCust"
   data = requests.get(url=url ).json()
-  print(data)
+  # print(data)
   for customer in data:
     customers = text('SELECT * FROM public."Customer"')
     result = db.session.execute(customers)
@@ -145,7 +145,7 @@ def generateCustData():
     is_active = customer["is_active"]
     is_anonymous = customer["is_anonymous"]
 
-    print(data)
+    # print(data)
     if firstname is None:
       return {"error": "You need to fill in all fields accurately"}
 
