@@ -131,7 +131,7 @@ def generateCustData():
     customers = text('SELECT * FROM public."Customer"')
     result = db.session.execute(customers)
     result1 =result.mappings().all()
-    newId = len(result1) + 1 
+    newId = customer["customerId"]
     firstname = customer["firstname"]
     lastname = customer["lastname"]
     city = customer["city"]
