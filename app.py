@@ -132,18 +132,18 @@ def generateCustData():
     result = db.session.execute(customers)
     result1 =result.mappings().all()
     newId = len(result1) + 1 
-    firstname = data["data"]["firstname"]
-    lastname = data["data"]["lastname"]
-    city = data["data"]["city"]
-    phonenumber = data["data"]["phonenumber"]
-    ffavoriteBarber = data["data"]["ffavoriteBarber"]
-    email = data["data"]["email"]
-    unhashedPassword = data["data"]["password"]
+    firstname = customer["firstname"]
+    lastname = customer["lastname"]
+    city = customer["city"]
+    phonenumber = customer["phonenumber"]
+    ffavoriteBarber = customer["ffavoriteBarber"]
+    email = customer["email"]
+    unhashedPassword = customer["password"]
     password = generate_password_hash(unhashedPassword)
-    # isloggedin = data["data"]["isloggedin"]
-    is_authenticated = data["data"]["is_authenticated"]
-    is_active = data["data"]["is_active"]
-    is_anonymous = data["data"]["is_anonymous"]
+    # isloggedin = customer["isloggedin"]
+    is_authenticated = customer["is_authenticated"]
+    is_active = customer["is_active"]
+    is_anonymous = customer["is_anonymous"]
 
     print(data)
     if firstname is None:
