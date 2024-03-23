@@ -149,7 +149,7 @@ def generateCustData():
     if firstname is None:
       return {"error": "You need to fill in all fields accurately"}
 
-    customer = Customer(customerId=f'{newId}', firstname=f'{firstname}',lastname=f'{lastname}',city=f'{city}',phonenumber=f'{phonenumber}',ffavoriteBarber=f'{ffavoriteBarber}',email=f'{email}',password = f"{password}")
+    customer = Customer(customerId=f'{newId}', firstname=f'{firstname}',lastname=f'{lastname}',city=f'{city}',phone=f'{phonenumber}',ffavoriteBarber=f'{ffavoriteBarber}',email=f'{email}',password = f"{password}")
     db.session.add(customer)
     db.session.commit()
 
