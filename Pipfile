@@ -31,6 +31,7 @@ sqlalchemy = "==2.0.9"
 tomlkit = "==0.11.8"
 typing-extensions = "==4.5.0"
 werkzeug = "==2.2.3"
+requests = "==2.31.0"
 
 [dev-packages]
 
